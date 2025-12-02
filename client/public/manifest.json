@@ -1,0 +1,28 @@
+{
+  "name": "DataWatch - Data Usage Monitor",
+  "short_name": "DataWatch",
+  "description": "Monitor your mobile data usage with real-time insights and alerts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMzQjgyRjYiLz4KPHBhdGggZD0iTTQ4IDEyOEM0OCA5OC44IDcwLjggNzYgMTAwIDc2VjEwNEMxMTUuMiAxMDQgMTI4IDkxLjIgMTI4IDc2VjEwNEMxNTcuMiAxMDQgMTgwIDEyNi44IDE4MCAxNTZWMTY0SDQ4VjEyOFoiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI5NiIgY3k9IjQ4IiByPSIxNiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjU2OCIgdmlld0JveD0iMCAwIDMyMCA1NjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iNTY4IiByeD0iMjQiIGZpbGw9IiNGOUZBRkIiLz4KPHJlY3QgeD0iMTYiIHk9IjE2IiB3aWR0aD0iMjg4IiBoZWlnaHQ9IjUzNiIgcng9IjE2IiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIxNiIgeT0iMTYiIHdpZHRoPSIyODgiIGhlaWdodD0iNjQiIGZpbGw9IiMzQjgyRjYiLz4KPHRleHQgeD0iNDgiIHk9IjU2IiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjYwMCI+RGF0YVdhdGNoPC90ZXh0Pgo8Y2lyY2xlIGN4PSIxNjAiIGN5PSIxNjAiIHI9IjQ4IiBzdHJva2U9IiMzQjgyRjYiIHN0cm9rZS13aWR0aD0iOCIgZmlsbD0ibm9uZSIvPgo8dGV4dCB4PSIxNDAiIHk9IjE2OCIgZmlsbD0iIzNCODJGNiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9IjcwMCI+NjglPC90ZXh0Pgo8L3N2Zz4=",
+      "sizes": "320x568",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    }
+  ],
+  "lang": "en",
+  "dir": "ltr"
+}

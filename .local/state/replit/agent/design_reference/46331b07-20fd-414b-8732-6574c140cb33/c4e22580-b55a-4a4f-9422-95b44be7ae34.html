@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataWatch - Mobile Data Usage Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#F59E0B',
+                        danger: '#EF4444'
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-container { position: relative; height: 200px; }
+        .usage-bar { transition: width 0.3s ease; }
+        .pulse-dot { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .app-icon { width: 40px; height: 40px; border-radius: 8px; }
+        .progress-ring { transform: rotate(-90deg); }
+        .progress-ring circle { transition: stroke-dashoffset 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <!-- @COMPONENT: MobileApp -->
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
+        <!-- @COMPONENT: Header -->
+        <header class="bg-primary text-white p-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-chart-line text-sm"></i>
+                </div>
+                <h1 class="text-lg font-semibold">DataWatch</h1>
+            </div>
+            <button class="w-8 h-8 flex items-center justify-center">
+                <i class="fas fa-bell text-sm"></i>
+                <span class="absolute top-3 right-3 w-2 h-2 bg-danger rounded-full pulse-dot"></span>
+            </button>
+        </header>
+        <!-- @END_COMPONENT: Header -->
+
+        <!-- @COMPONENT: MainContent -->
+        <main class="pb-20">
+            <!-- @COMPONENT: UsageOverview -->
+            <section class="p-4">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold">Current Usage</h2>
+                        <span class="text-sm text-slate-500">This month</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-center mb-6">
+                        <div class="relative w-32 h-32">
+                            <svg class="w-full h-full progress-ring" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#E2E8F0" stroke-width="8"/>
+                                <circle cx="50" cy="50" r="45" fill="none" stroke="#3B82F6" stroke-width="8" 
+                                        stroke-dasharray="283" stroke-dashoffset="85" stroke-linecap="round"/>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span class="text-2xl font-bold text-primary" data-bind="usage.percentage">68%</span>
+                                <span class="text-xs text-slate-500">Used</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <div class="text-xl font-semibold" data-bind="usage.used">6.8 GB</div>
+                            <div class="text-sm text-slate-500">Used</div>
+                        </div>
+                        <div>
+                            <div class="text-xl font-semibold" data-bind="usage.remaining">3.2 GB</div>
+                            <div class="text-sm text-slate-500">Remaining</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: UsageOverview -->
+
+            <!-- @COMPONENT: QuickStats -->
+            <section class="px-4 mb-6">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 text-center">
+                        <div class="text-secondary text-xl font-semibold" data-bind="stats.todayUsage">245 MB</div>
+                        <div class="text-xs text-slate-500">Today</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 text-center">
+                        <div class="text-accent text-xl font-semibold" data-bind="stats.avgDaily">320 MB</div>
+                        <div class="text-xs text-slate-500">Daily Avg</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 text-center">
+                        <div class="text-danger text-xl font-semibold" data-bind="stats.daysLeft">12</div>
+                        <div class="text-xs text-slate-500">Days Left</div>
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: QuickStats -->
+
+            <!-- @COMPONENT: RealTimeChart -->
+            <section class="px-4 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Real-Time Usage</h3>
+                        <span class="flex items-center text-sm text-secondary">
+                            <span class="w-2 h-2 bg-secondary rounded-full mr-2 pulse-dot"></span>
+                            Live
+                        </span>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <!-- Simulated chart with CSS bars -->
+                        <div class="flex items-end justify-between h-full space-x-1">
+                            <!-- @MAP: chartData.map(point => ( -->
+                            <div class="bg-primary/20 rounded-t" style="height: 45%; width: 8px;"></div>
+                            <div class="bg-primary/30 rounded-t" style="height: 62%; width: 8px;"></div>
+                            <div class="bg-primary/40 rounded-t" style="height: 38%; width: 8px;"></div>
+                            <div class="bg-primary/50 rounded-t" style="height: 71%; width: 8px;"></div>
+                            <div class="bg-primary/60 rounded-t" style="height: 55%; width: 8px;"></div>
+                            <div class="bg-primary/70 rounded-t" style="height: 83%; width: 8px;"></div>
+                            <div class="bg-primary/80 rounded-t" style="height: 49%; width: 8px;"></div>
+                            <div class="bg-primary/90 rounded-t" style="height: 76%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 91%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 67%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 84%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 52%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 68%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 95%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 73%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 59%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 81%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 46%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 72%; width: 8px;"></div>
+                            <div class="bg-primary rounded-t" style="height: 88%; width: 8px;"></div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between text-xs text-slate-500 mt-2">
+                        <span>12:00 PM</span>
+                        <span>6:00 PM</span>
+                        <span>Now</span>
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: RealTimeChart -->
+
+            <!-- @COMPONENT: AppUsageList -->
+            <section class="px-4 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Top Apps</h3>
+                        <button class="text-sm text-primary font-medium">View All</button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <!-- @MAP: topApps.map(app => ( -->
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="app-icon bg-red-500 flex items-center justify-center">
+                                    <i class="fab fa-youtube text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium" data-bind="app.name">YouTube</div>
+                                    <div class="text-sm text-slate-500" data-bind="app.category">Video Streaming</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold" data-bind="app.usage">1.2 GB</div>
+                                <div class="text-sm text-slate-500">18%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="app-icon bg-blue-500 flex items-center justify-center">
+                                    <i class="fab fa-facebook text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium" data-bind="app.name">Facebook</div>
+                                    <div class="text-sm text-slate-500" data-bind="app.category">Social Media</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold" data-bind="app.usage">890 MB</div>
+                                <div class="text-sm text-slate-500">13%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="app-icon bg-green-500 flex items-center justify-center">
+                                    <i class="fab fa-spotify text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium" data-bind="app.name">Spotify</div>
+                                    <div class="text-sm text-slate-500" data-bind="app.category">Music Streaming</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold" data-bind="app.usage">650 MB</div>
+                                <div class="text-sm text-slate-500">10%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="app-icon bg-purple-500 flex items-center justify-center">
+                                    <i class="fab fa-instagram text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium" data-bind="app.name">Instagram</div>
+                                    <div class="text-sm text-slate-500" data-bind="app.category">Social Media</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold" data-bind="app.usage">520 MB</div>
+                                <div class="text-sm text-slate-500">8%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between" data-mock="true">
+                            <div class="flex items-center space-x-3">
+                                <div class="app-icon bg-orange-500 flex items-center justify-center">
+                                    <i class="fas fa-globe text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium" data-bind="app.name">Chrome</div>
+                                    <div class="text-sm text-slate-500" data-bind="app.category">Web Browser</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-semibold" data-bind="app.usage">480 MB</div>
+                                <div class="text-sm text-slate-500">7%</div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: AppUsageList -->
+
+            <!-- @COMPONENT: DataLimitAlert -->
+            <section class="px-4 mb-6">
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-amber-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-amber-800">Data Limit Warning</div>
+                            <div class="text-sm text-amber-700">You've used 68% of your monthly data. Consider reducing usage.</div>
+                        </div>
+                        <button class="text-amber-600 hover:text-amber-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: DataLimitAlert -->
+
+            <!-- @COMPONENT: QuickActions -->
+            <section class="px-4 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="p-4 bg-primary/10 rounded-lg text-center hover:bg-primary/20 transition-colors" data-event="click:handleSetLimit">
+                            <i class="fas fa-sliders-h text-primary text-xl mb-2"></i>
+                            <div class="font-medium text-primary">Set Limit</div>
+                        </button>
+                        
+                        <button class="p-4 bg-secondary/10 rounded-lg text-center hover:bg-secondary/20 transition-colors" data-event="click:handleExportData">
+                            <i class="fas fa-download text-secondary text-xl mb-2"></i>
+                            <div class="font-medium text-secondary">Export Data</div>
+                        </button>
+                        
+                        <button class="p-4 bg-accent/10 rounded-lg text-center hover:bg-accent/20 transition-colors" data-event="click:handleViewHistory">
+                            <i class="fas fa-history text-accent text-xl mb-2"></i>
+                            <div class="font-medium text-accent">View History</div>
+                        </button>
+                        
+                        <button class="p-4 bg-slate-100 rounded-lg text-center hover:bg-slate-200 transition-colors" data-event="click:handleSettings">
+                            <i class="fas fa-cog text-slate-600 text-xl mb-2"></i>
+                            <div class="font-medium text-slate-600">Settings</div>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: QuickActions -->
+        </main>
+        <!-- @END_COMPONENT: MainContent -->
+
+        <!-- @COMPONENT: BottomNavigation -->
+        <nav class="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-slate-200 px-4 py-2">
+            <div class="flex items-center justify-around">
+                <button class="flex flex-col items-center py-2 px-3 text-primary" data-event="click:navigateToHome">
+                    <i class="fas fa-home text-lg mb-1"></i>
+                    <span class="text-xs font-medium">Home</span>
+                </button>
+                
+                <button class="flex flex-col items-center py-2 px-3 text-slate-400" data-event="click:navigateToApps">
+                    <i class="fas fa-mobile-alt text-lg mb-1"></i>
+                    <span class="text-xs">Apps</span>
+                </button>
+                
+                <button class="flex flex-col items-center py-2 px-3 text-slate-400" data-event="click:navigateToHistory">
+                    <i class="fas fa-chart-bar text-lg mb-1"></i>
+                    <span class="text-xs">History</span>
+                </button>
+                
+                <button class="flex flex-col items-center py-2 px-3 text-slate-400" data-event="click:navigateToSettings">
+                    <i class="fas fa-user-cog text-lg mb-1"></i>
+                    <span class="text-xs">Settings</span>
+                </button>
+            </div>
+        </nav>
+        <!-- @END_COMPONENT: BottomNavigation -->
+    </div>
+    <!-- @END_COMPONENT: MobileApp -->
+
+    <script>
+        // TODO: Implement real-time data fetching and updates
+        // TODO: Implement PWA service worker for offline capabilities
+        // TODO: Implement local storage for user preferences
+        // TODO: Implement push notifications for data limit alerts
+        // TODO: Implement export functionality for usage reports
+        
+        (function() {
+            'use strict';
+            
+            // Mock data generation for demonstration
+            const mockData = {
+                currentUsage: {
+                    used: 6.8,
+                    total: 10.0,
+                    percentage: 68
+                },
+                todayUsage: 245,
+                averageDaily: 320,
+                daysLeft: 12,
+                topApps: [
+                    { name: 'YouTube', category: 'Video Streaming', usage: 1.2, icon: 'fab fa-youtube' },
+                    { name: 'Facebook', category: 'Social Media', usage: 0.89, icon: 'fab fa-facebook' },
+                    { name: 'Spotify', category: 'Music Streaming', usage: 0.65, icon: 'fab fa-spotify' },
+                    { name: 'Instagram', category: 'Social Media', usage: 0.52, icon: 'fab fa-instagram' },
+                    { name: 'Chrome', category: 'Web Browser', usage: 0.48, icon: 'fas fa-globe' }
+                ]
+            };
+            
+            // Simulate real-time updates
+            function updateRealTimeData() {
+                // In a real app, this would fetch data from an API
+                console.log('Updating real-time data...');
+                
+                // Update progress ring
+                const progressRing = document.querySelector('.progress-ring circle:last-child');
+                if (progressRing) {
+                    const percentage = Math.random() * 100;
+                    const circumference = 2 * Math.PI * 45;
+                    const offset = circumference - (percentage / 100) * circumference;
+                    progressRing.style.strokeDashoffset = offset;
+                }
+            }
+            
+            // Initialize real-time updates
+            setInterval(updateRealTimeData, 5000);
+            
+            // Touch-friendly button interactions
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                button.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Mock export functionality
+            function handleExportData() {
+                // In a real app, this would generate and download a CSV/PDF report
+                console.log('Exporting data usage report...');
+                alert('Export functionality would be implemented here');
+            }
+            
+            // Mock navigation
+            function navigate(section) {
+                console.log(`Navigating to ${section}`);
+                // In a real app, this would handle routing
+            }
+            
+            // Register service worker for PWA capabilities
+            if ('serviceWorker' in navigator) {
+                // TODO: Register service worker for offline functionality
+                console.log('Service worker registration would be implemented here');
+            }
+            
+            // Initialize app
+            console.log('DataWatch app initialized');
+        })();
+    </script>
+</body>
+</html>
